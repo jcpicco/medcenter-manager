@@ -463,14 +463,6 @@
               No hay archivos adjuntos
             </div>
           </div>
-
-          <!-- Destructive Actions (Only in Edit Mode) -->
-          <div *ngIf="editingMedicalRecord" class="form-section destructive-zone">
-            <button type="button" class="btn btn-danger btn-full"
-              (click)="deleteMedicalRecord(editingMedicalRecord.id)">
-              Eliminar Historia Clínica
-            </button>
-          </div>
         </form>
       </div>
 
@@ -660,6 +652,9 @@
           Cerrar
         </button>
         <div class="spacer"></div>
+        <button class="btn btn-danger" (click)="deleteMedicalRecord(viewingMedicalRecord!.id)">
+          Eliminar
+        </button>
         <button class="btn btn-primary" (click)="editMedicalRecord(viewingMedicalRecord!)">
           Actualizar
         </button>
@@ -725,6 +720,9 @@
           Cerrar
         </button>
         <div class="spacer"></div>
+        <button class="btn btn-danger" (click)="deletePreviousRecord(viewingPreviousRecord!.id)">
+          Eliminar
+        </button>
         <button class="btn btn-primary" (click)="editPreviousRecord(viewingPreviousRecord!)">
           Actualizar
         </button>
@@ -806,16 +804,6 @@
             No hay archivos adjuntos
           </div>
         </div>
-
-
-
-        <!-- Destructive Actions (Only in Edit Mode) -->
-        <div *ngIf="editingPreviousRecord" class="form-section destructive-zone">
-          <button type="button" class="btn btn-danger btn-full"
-            (click)="deletePreviousRecord(editingPreviousRecord.id)">
-            Eliminar Antecedentes
-          </button>
-        </div>
       </div>
 
       <div class="modal-footer">
@@ -863,14 +851,6 @@
 
           <div *ngIf="patientNoteError" class="alert alert-danger">
             {{ patientNoteError }}
-          </div>
-
-          <!-- Destructive Actions (Only in Edit Mode) -->
-          <div *ngIf="editingPatientNote" class="form-section destructive-zone">
-            <button type="button" class="btn btn-danger btn-full"
-              (click)="deletePatientNoteFromModal(editingPatientNote.id)">
-              Eliminar Nota
-            </button>
           </div>
         </form>
       </div>
@@ -921,6 +901,9 @@
           Cerrar
         </button>
         <div class="spacer"></div>
+        <button class="btn btn-danger" (click)="deletePatientNoteFromModal(viewingPatientNote!.id)">
+          Eliminar
+        </button>
         <button class="btn btn-primary" (click)="editPatientNote(viewingPatientNote!)">
           Actualizar
         </button>

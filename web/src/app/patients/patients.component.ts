@@ -292,15 +292,25 @@ export class PatientsComponent implements OnInit {
    * Filtrar pacientes por búsqueda
    */
   applyFilters(): void {
-    const term = this.normalizeSearchText(this.searchTerm);
-    this.filteredPatients = this.patients.filter(
-      (patient) =>
-        this.normalizeSearchText(patient.name).includes(term) ||
-        this.normalizeSearchText(patient.lastName).includes(term) ||
-        this.normalizeSearchText(patient.secondLastName).includes(term) ||
-        this.normalizeSearchText(patient.email).includes(term) ||
-        this.normalizeSearchText(patient.dni).includes(term)
-    );
+    const normalizedSearch = this.normalizeSearchText(this.searchTerm).trim();
+    if (!normalizedSearch) {
+      this.filteredPatients = [...this.patients];
+    } else {
+      const searchTerms = normalizedSearch.split(/\s+/).filter((term) => term.length > 0);
+      this.filteredPatients = this.patients.filter((patient) => {
+        const patientFields = [
+          patient.name,
+          patient.lastName,
+          patient.secondLastName,
+          patient.email,
+          patient.dni,
+        ];
+        const patientNormalizedText = this.normalizeSearchText(
+          patientFields.filter(Boolean).join(" ")
+        );
+        return searchTerms.every((term) => patientNormalizedText.includes(term));
+      });
+    }
     this.sortPatientsList();
     this.currentPage = 1;
   }

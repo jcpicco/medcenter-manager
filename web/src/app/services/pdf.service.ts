@@ -332,6 +332,51 @@ export class PdfService {
 
         let yPos = 45;
 
+        // --- Doctor & Patient Info Boxes ---
+        const leftBoxWidth = 85;
+        const rightBoxWidth = 85;
+        const rightBoxX = pageWidth - margin - rightBoxWidth;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+
+        const nameText = `Nombre y apellido: ${patient.name} ${patient.lastName} ${patient.secondLastName || ''}`.trim();
+        const nameLines = doc.splitTextToSize(nameText, rightBoxWidth - 4);
+        const addressText = `Dirección: ${invoiceData.address}`;
+        const addressLines = doc.splitTextToSize(addressText, rightBoxWidth - 4);
+
+        const boxHeight = Math.max(45, 10 + (nameLines.length * 5) + 8 + (addressLines.length * 5) + 5);
+
+        // Doctor info box
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.1);
+        doc.rect(margin, yPos, leftBoxWidth, boxHeight);
+        
+        doc.text("Dr. Pablo Adrián Consigliere Rodríguez.", margin + 2, yPos + 7);
+        doc.text("C/Alminares del Genil 13", margin + 2, yPos + 15);
+        doc.text("CP.18006", margin + 2, yPos + 23);
+        doc.text("Granada.          Te. 695189926", margin + 2, yPos + 31);
+        doc.text("CIF/NIF 76742170W", margin + 2, yPos + 39);
+
+        // Patient Info box
+        doc.rect(rightBoxX, yPos, rightBoxWidth, boxHeight);
+
+        doc.text(`Fecha: ${dateStr}`, rightBoxX + 2, yPos + 7);
+        doc.text(nameLines, rightBoxX + 2, yPos + 15);
+        
+        let currentY = yPos + 15 + ((nameLines.length - 1) * 5) + 8;
+        doc.text(`DNI: ${patient.dni || 'No especificado'}`, rightBoxX + 2, currentY);
+        
+        currentY += 8;
+        doc.text(addressLines, rightBoxX + 2, currentY);
+
+        yPos = yPos + boxHeight + 15;
+
+        if (yPos + 60 > doc.internal.pageSize.height - 30) {
+            doc.addPage();
+            yPos = 20;
+        }
+
         // --- Invoice Body Section ---
         autoTable(doc, {
             startY: yPos,
@@ -375,51 +420,6 @@ export class PdfService {
             },
             margin: { left: margin, right: margin }
         });
-
-        // @ts-ignore
-        yPos = doc.lastAutoTable.finalY + 15;
-
-        if (yPos + 60 > doc.internal.pageSize.height - 30) {
-            doc.addPage();
-            yPos = 20;
-        }
-
-        const leftBoxWidth = 85;
-        const rightBoxWidth = 85;
-        const rightBoxX = pageWidth - margin - rightBoxWidth;
-
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-
-        const nameText = `Nombre y apellido: ${patient.name} ${patient.lastName} ${patient.secondLastName || ''}`.trim();
-        const nameLines = doc.splitTextToSize(nameText, rightBoxWidth - 4);
-        const addressText = `Dirección: ${invoiceData.address}`;
-        const addressLines = doc.splitTextToSize(addressText, rightBoxWidth - 4);
-
-        const boxHeight = Math.max(45, 10 + (nameLines.length * 5) + 8 + (addressLines.length * 5) + 5);
-
-        // Doctor info box
-        doc.setDrawColor(0, 0, 0);
-        doc.setLineWidth(0.1);
-        doc.rect(margin, yPos, leftBoxWidth, boxHeight);
-        
-        doc.text("Dr. Pablo Adrián Consigliere Rodríguez.", margin + 2, yPos + 7);
-        doc.text("C/Alminares del Genil 13", margin + 2, yPos + 15);
-        doc.text("CP.18006", margin + 2, yPos + 23);
-        doc.text("Granada.          Te. 695189926", margin + 2, yPos + 31);
-        doc.text("CIF/NIF 76742170W", margin + 2, yPos + 39);
-
-        // Patient Info box
-        doc.rect(rightBoxX, yPos, rightBoxWidth, boxHeight);
-
-        doc.text(`Fecha: ${dateStr}`, rightBoxX + 2, yPos + 7);
-        doc.text(nameLines, rightBoxX + 2, yPos + 15);
-        
-        let currentY = yPos + 15 + ((nameLines.length - 1) * 5) + 8;
-        doc.text(`DNI: ${patient.dni || 'No especificado'}`, rightBoxX + 2, currentY);
-        
-        currentY += 8;
-        doc.text(addressLines, rightBoxX + 2, currentY);
 
         // Footer
         const pageCount = doc.getNumberOfPages();

@@ -235,13 +235,7 @@ export class PatientDetailComponent implements OnInit {
         "",
         [Validators.email, Validators.minLength(3), Validators.maxLength(100)],
       ],
-      phone: [
-        "",
-        [
-          Validators.minLength(3),
-          Validators.maxLength(20),
-        ],
-      ],
+      phone: ["", [Validators.minLength(3), Validators.maxLength(20)]],
       dni: ["", [Validators.minLength(3), Validators.maxLength(20)]],
       birthDate: [""],
       allergies: ["", [Validators.maxLength(255)]],
@@ -648,7 +642,13 @@ export class PatientDetailComponent implements OnInit {
   }
 
   closeNoteModal(skipDirtyCheck = false): void {
-    if (!skipDirtyCheck && this.noteForm.dirty && !confirm('¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán.')) {
+    if (
+      !skipDirtyCheck &&
+      this.noteForm.dirty &&
+      !confirm(
+        "¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán."
+      )
+    ) {
       return;
     }
     this.showNoteModal = false;
@@ -1366,7 +1366,13 @@ export class PatientDetailComponent implements OnInit {
    * Cerrar modal de registro médico
    */
   closeMedicalRecordModal(skipDirtyCheck = false): void {
-    if (!skipDirtyCheck && this.medicalRecordForm.dirty && !confirm('¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán.')) {
+    if (
+      !skipDirtyCheck &&
+      this.medicalRecordForm.dirty &&
+      !confirm(
+        "¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán."
+      )
+    ) {
       return;
     }
     this.showMedicalRecordModal = false;
@@ -1393,7 +1399,13 @@ export class PatientDetailComponent implements OnInit {
    * Cerrar modal de registro previo
    */
   closePreviousRecordModal(skipDirtyCheck = false): void {
-    if (!skipDirtyCheck && this.previousRecordForm.dirty && !confirm('¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán.')) {
+    if (
+      !skipDirtyCheck &&
+      this.previousRecordForm.dirty &&
+      !confirm(
+        "¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán."
+      )
+    ) {
       return;
     }
     this.showPreviousRecordModal = false;
@@ -1424,6 +1436,7 @@ export class PatientDetailComponent implements OnInit {
             this.loadMedicalRecords(this.selectedPatient.id);
           }
           this.closeMedicalRecordModal(true);
+          this.closeViewMedicalRecordModal();
         },
         error: (err) =>
           console.error("Error al eliminar registro médico:", err),
@@ -1442,6 +1455,7 @@ export class PatientDetailComponent implements OnInit {
             this.loadPreviousRecords(this.selectedPatient.id);
           }
           this.closePreviousRecordModal(true);
+          this.closeViewPreviousRecordModal();
         },
         error: (err) =>
           console.error("Error al eliminar registro previo:", err),
@@ -1631,6 +1645,7 @@ export class PatientDetailComponent implements OnInit {
               this.loadPatientNotes(this.selectedPatient.id);
             }
             this.closePatientNoteModal(true);
+            this.closeViewPatientNoteModal();
           },
           error: (err) => {
             console.error("Error al eliminar nota:", err);
@@ -1644,7 +1659,13 @@ export class PatientDetailComponent implements OnInit {
    * Cerrar modal de nota de paciente
    */
   closePatientNoteModal(skipDirtyCheck = false): void {
-    if (!skipDirtyCheck && this.patientNoteForm.dirty && !confirm('¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán.')) {
+    if (
+      !skipDirtyCheck &&
+      this.patientNoteForm.dirty &&
+      !confirm(
+        "¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán."
+      )
+    ) {
       return;
     }
     this.showPatientNoteModal = false;
@@ -2223,13 +2244,23 @@ export class PatientDetailComponent implements OnInit {
                   : 0)
             )
           : "";
+      const hasAllergies = !!(
+        this.selectedPatient.allergies && this.selectedPatient.allergies.trim()
+      );
       const autoValues: Record<string, string> = {
         fullName: `${this.selectedPatient.name} ${
           this.selectedPatient.lastName
         } ${this.selectedPatient.secondLastName || ""}`.trim(),
         date: this.formatDate(new Date()),
         dni: this.selectedPatient.dni || "",
+        birthDate: this.selectedPatient.birthDate
+          ? this.formatDate(this.selectedPatient.birthDate)
+          : "",
         age,
+        allergies: hasAllergies ? "Sí" : "No",
+        allergiesDetail: hasAllergies
+          ? this.selectedPatient.allergies!.trim()
+          : "",
       };
       Object.keys(autoValues).forEach((key) => {
         if (this.templateForm.get(key)) {
@@ -2380,7 +2411,11 @@ export class PatientDetailComponent implements OnInit {
       window.open(this.generatedTemplatePdfUrl, "_blank");
       return;
     }
-    if ((this.generatedPdfFlow === "legacy" || this.generatedPdfFlow === "factura") && this.generatedPdf) {
+    if (
+      (this.generatedPdfFlow === "legacy" ||
+        this.generatedPdfFlow === "factura") &&
+      this.generatedPdf
+    ) {
       window.open(this.generatedPdf.output("bloburl").toString(), "_blank");
     }
   }
@@ -2398,10 +2433,17 @@ export class PatientDetailComponent implements OnInit {
   }
 
   executeEmail(): void {
-    if ((this.generatedPdfFlow === "legacy" || this.generatedPdfFlow === "factura") && this.generatedPdf) {
-      const fileName = this.generatedPdfFlow === "factura" 
-        ? `factura_${this.selectedPatient?.lastName || "paciente"}.pdf`
-        : `historia_clinica_${this.selectedPatient?.lastName || "paciente"}.pdf`;
+    if (
+      (this.generatedPdfFlow === "legacy" ||
+        this.generatedPdfFlow === "factura") &&
+      this.generatedPdf
+    ) {
+      const fileName =
+        this.generatedPdfFlow === "factura"
+          ? `factura_${this.selectedPatient?.lastName || "paciente"}.pdf`
+          : `historia_clinica_${
+              this.selectedPatient?.lastName || "paciente"
+            }.pdf`;
       this.generatedPdf.save(fileName);
     } else if (
       this.generatedPdfFlow === "template" &&
@@ -2468,7 +2510,13 @@ export class PatientDetailComponent implements OnInit {
   }
 
   closeEditPatientModal(skipDirtyCheck = false): void {
-    if (!skipDirtyCheck && this.patientForm.dirty && !confirm('¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán.')) {
+    if (
+      !skipDirtyCheck &&
+      this.patientForm.dirty &&
+      !confirm(
+        "¿Estás seguro de que deseas cerrar? Los cambios no guardados se perderán."
+      )
+    ) {
       return;
     }
     this.showEditPatientModal = false;
