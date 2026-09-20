@@ -140,83 +140,6 @@ export class PdfManagerService {
           required: true,
         },
         {
-          key: "renal_litiasis",
-          label: "Alteración de la función renal o litiasis",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 468, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 468, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "funcion_cardiaca",
-          label: "Alteración de la función cardíaca",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 447, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 447, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "diabetes",
-          label: "Diabetes",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 426, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 426, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "deficiencia_g6pd",
-          label: "Deficiencia de G6PD",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 406, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 406, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "hipomagnesemia",
-          label: "Hipomagnesemia o hipoclacemia",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 385, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 385, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "hemocromatosis",
-          label: "Hemocromatosis",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 364, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 364, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "hiperoxaluria",
-          label: "Hiperoxaluria",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 343, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 343, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
           key: "legalRepresentativeName",
           label: "Representante legal",
           x: 100,
@@ -288,50 +211,6 @@ export class PdfManagerService {
           lineHeight: 15,
           maxLines: 4,
           maxLength: 2000,
-        },
-        {
-          key: "hipertension",
-          label: "Hipertensión arterial",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 490, y: 419, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 517, y: 419, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "diabetes",
-          label: "Diabetes",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 490, y: 397, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 517, y: 397, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "coagulation",
-          label: "Alteraciones de la coagulación",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 490, y: 377, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 517, y: 377, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "anesthesics",
-          label: "Intolerancia a los anestésicos locales",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 490, y: 356, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 517, y: 356, valueMatch: "No", drawValue: "X" },
-          ],
         },
         {
           key: "allergies",
@@ -437,61 +316,6 @@ export class PdfManagerService {
           maxLength: 3,
         },
         {
-          key: "favismo",
-          label: "Favismo",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 297, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 297, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "hipertiroidismo",
-          label: "Hipertiroidismo con nódulos activos",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 277, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 277, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "enfermedad_sangre",
-          label: "Enfermedad severa de la sangre",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 256, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 256, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "embarazo",
-          label: "Embarazo",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 235, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 235, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
-          key: "infarto",
-          label: "Infarto de Miocardio agudo o reciente",
-          inputType: "select",
-          options: ["Sí", "No"],
-          fontSize: 13,
-          positions: [
-            { pageIndex: 0, x: 453, y: 214, valueMatch: "Sí", drawValue: "X" },
-            { pageIndex: 0, x: 505, y: 214, valueMatch: "No", drawValue: "X" },
-          ],
-        },
-        {
           key: "legalRepresentativeName",
           label: "Representante legal",
           x: 100,
@@ -518,7 +342,7 @@ export class PdfManagerService {
           key: "date",
           label: "Fecha",
           x: 120,
-          y: 110,
+          y: 108,
           pageIndex: 0,
           fontSize: 10,
           required: true,
@@ -581,7 +405,9 @@ export class PdfManagerService {
         },
         {
           key: "legalRepresentativeQuality",
-          label: "En calidad de (representante legal, familiar o allegado)",
+          label: "En calidad de",
+          inputType: "select",
+          options: ["Representante legal", "Familiar", "Allegado"],
           x: 345,
           y: 555,
           pageIndex: 0,
@@ -626,7 +452,7 @@ export class PdfManagerService {
           key: "procedure",
           label: "Procedimiento a realizar",
           x: 205,
-          y: 133,
+          y: 132,
           pageIndex: 0,
           fontSize: 10,
           maxWidth: 320,
@@ -657,8 +483,9 @@ export class PdfManagerService {
     invoiceData: {
       facturaNumber: string;
       address: string;
-      totalAmount: number;
-      concept: string;
+      totalAmount?: number;
+      concept?: string;
+      items?: Array<{ concept: string; price: number }>;
     }
   ): jsPDF {
     return this.pdfService.generateInvoicePdf(patient, invoiceData);

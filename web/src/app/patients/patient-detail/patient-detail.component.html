@@ -1050,13 +1050,40 @@
                 <label for="invoiceAddress">Dirección del paciente <span>*</span></label>
                 <textarea id="invoiceAddress" class="form-control" formControlName="address" rows="3" maxlength="255" placeholder="Dirección completa..."></textarea>
               </div>
-              <div class="form-group">
-                <label for="invoiceConcept">Concepto <span>*</span></label>
-                <textarea id="invoiceConcept" class="form-control" formControlName="concept" rows="5" placeholder="Ej: Consulta y/o terapia médica..."></textarea>
-              </div>
-              <div class="form-group">
-                <label for="invoiceTotalAmount">Total servicios médicos (€) <span>*</span></label>
-                <input id="invoiceTotalAmount" type="number" class="form-control" formControlName="totalAmount" min="0" step="0.01" placeholder="Ej: 150.00" />
+
+              <!-- Líneas de Factura -->
+              <div class="invoice-items-section">
+                <div class="invoice-items-header">
+                  <span class="items-title">Líneas de la factura <span>*</span></span>
+                  <button type="button" class="btn btn-secondary btn-sm" (click)="addInvoiceItem()">
+                    + Añadir línea
+                  </button>
+                </div>
+
+                <div formArrayName="items" class="invoice-items-list">
+                  <div *ngFor="let item of invoiceItems.controls; let i = index" [formGroupName]="i" class="invoice-item-row">
+                    <div class="item-concept-col">
+                      <label *ngIf="i === 0" class="sub-label">Concepto <span>*</span></label>
+                      <input type="text" class="form-control" formControlName="concept" placeholder="Descripción del servicio..." />
+                    </div>
+                    <div class="item-price-col">
+                      <label *ngIf="i === 0" class="sub-label">Precio (€) <span>*</span></label>
+                      <input type="number" class="form-control" formControlName="price" min="0" step="0.01" placeholder="0.00" />
+                    </div>
+                    <div class="item-action-col">
+                      <label *ngIf="i === 0" class="sub-label">&nbsp;</label>
+                      <button type="button" class="btn btn-danger btn-sm btn-delete-row" (click)="removeInvoiceItem(i)" [disabled]="invoiceItems.length <= 1" title="Eliminar línea">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Resumen Total -->
+                <div class="invoice-total-summary">
+                  <span class="total-label">Total servicios médicos:</span>
+                  <span class="total-amount">{{ invoiceTotalAmount | number:'1.2-2' }} €</span>
+                </div>
               </div>
             </form>
           </div>

@@ -297,7 +297,13 @@ export class PdfService {
      */
     public generateInvoicePdf(
         patient: PatientDto,
-        invoiceData: { facturaNumber: string; address: string; totalAmount: number; concept: string }
+        invoiceData: {
+            facturaNumber: string;
+            address: string;
+            totalAmount?: number;
+            concept?: string;
+            items?: Array<{ concept: string; price: number }>;
+        }
     ): jsPDF {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.width;
@@ -370,37 +376,69 @@ export class PdfService {
         currentY += 8;
         doc.text(addressLines, rightBoxX + 2, currentY);
 
-        yPos = yPos + boxHeight + 15;
+        yPos = yPos + boxHeight + 10;
 
-        if (yPos + 60 > doc.internal.pageSize.height - 30) {
+        // --- Factura Number Box above Table ---
+        const facturaBoxWidth = pageWidth - (margin * 2);
+        const facturaBoxHeight = 10;
+
+        if (yPos + facturaBoxHeight + 40 > doc.internal.pageSize.height - 30) {
             doc.addPage();
             yPos = 20;
         }
 
-        // --- Invoice Body Section ---
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.1);
+        doc.rect(margin, yPos, facturaBoxWidth, facturaBoxHeight);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10.5);
+        doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+        doc.text(`FACTURA Nº: ${invoiceData.facturaNumber}`, margin + 4, yPos + 6.8);
+
+        yPos = yPos + facturaBoxHeight + 6;
+
+        // Prepare line items
+        const rawItems = (invoiceData.items && invoiceData.items.length > 0)
+            ? invoiceData.items
+            : (invoiceData.concept ? [{ concept: invoiceData.concept, price: invoiceData.totalAmount || 0 }] : []);
+
+        const calculatedTotal = (invoiceData.totalAmount !== undefined && invoiceData.totalAmount !== null)
+            ? invoiceData.totalAmount
+            : rawItems.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
+
+        const formatCurrency = (val: number) => {
+            return Number(val || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        };
+
+        const tableBody: any[] = rawItems.map(item => [
+            { content: item.concept, styles: { halign: 'left', valign: 'middle', minCellHeight: 8 } },
+            { content: formatCurrency(item.price), styles: { halign: 'right', valign: 'middle', minCellHeight: 8 } }
+        ]);
+
+        // Total row
+        tableBody.push([
+            { content: 'Total servicios médicos', styles: { halign: 'right', fontStyle: 'bold' } },
+            { content: formatCurrency(calculatedTotal), styles: { halign: 'right', fontStyle: 'bold' } }
+        ]);
+
+        // RGPD legal notice row
+        tableBody.push([
+            { 
+                content: "PABLO ADRIÁN CONSIGLIERE RODRÍGUEZ es el Responsable del tratamiento de sus datos personales y le informa de que estos datos serán tratados de conformidad con lo dispuesto en el Reglamento (UE) 2016/679, de 27 de abril (GDPR), y la Ley Orgánica 3/2018, de 5 de diciembre (LOPDGDD), con la finalidad de mantener una relación comercial (en base a una relación contractual, obligación legal o interés legítimo) y conservarlos durante no más tiempo del necesario para mantener el fin del tratamiento o mientras existan prescripciones legales que dictaminen su custodia. No se comunicarán los datos a terceros, salvo obligación legal. Asimismo, se le informa de que puede ejercer los derechos de acceso, rectificación, portabilidad y supresión de sus datos y los de limitación y oposición a su tratamiento dirigiéndose a PABLO ADRIÁN CONSIGLIERE RODRÍGUEZ en Calle Alminares del Genil 13 (bajo), - 18006 Granada (Granada). E-mail: contacto@tratamiento-dolor.es.\nTambien tiene derecho a presentar una reclamación ante la autoridad de control (www.aepd.es) si considera que el tratamiento no se ajusta a la normativa vigente.", 
+                colSpan: 2, 
+                styles: { fontSize: 7, halign: 'justify', cellPadding: 3 }
+            }
+        ]);
+
+        // --- Invoice Table Section ---
         autoTable(doc, {
             startY: yPos,
             head: [[
-                { content: 'CONCEPTO:', styles: { halign: 'left', fontStyle: 'bold' } }, 
-                { content: 'Factura Nº', styles: { halign: 'center', fontStyle: 'bold' } }
+                { content: 'CONCEPTO', styles: { halign: 'left', fontStyle: 'bold' } }, 
+                { content: 'IMPORTE', styles: { halign: 'right', fontStyle: 'bold' } }
             ]],
-            body: [
-                [
-                    { content: `\n${invoiceData.concept}`, styles: { valign: 'top', minCellHeight: 60 } }, 
-                    { content: `\n${invoiceData.facturaNumber}`, styles: { halign: 'center', valign: 'top', fontSize: 12, minCellHeight: 60 } }
-                ],
-                [
-                    { content: '-Total servicios médicos', styles: { halign: 'right' } },
-                    { content: `${invoiceData.totalAmount} €`, styles: { halign: 'center', fontStyle: 'bold' } }
-                ],
-                [
-                    { 
-                        content: "PABLO ADRIÁN CONSIGLIERE RODRÍGUEZ es el Responsable del tratamiento de sus datos personales y le informa de que estos datos serán tratados de conformidad con lo dispuesto en el Reglamento (UE) 2016/679, de 27 de abril (GDPR), y la Ley Orgánica 3/2018, de 5 de diciembre (LOPDGDD), con la finalidad de mantener una relación comercial (en base a una relación contractual, obligación legal o interés legítimo) y conservarlos durante no más tiempo del necesario para mantener el fin del tratamiento o mientras existan prescripciones legales que dictaminen su custodia. No se comunicarán los datos a terceros, salvo obligación legal. Asimismo, se le informa de que puede ejercer los derechos de acceso, rectificación, portabilidad y supresión de sus datos y los de limitación y oposición a su tratamiento dirigiéndose a PABLO ADRIÁN CONSIGLIERE RODRÍGUEZ en Calle Alminares del Genil 13 (bajo), - 18006 Granada (Granada). E-mail: contacto@tratamiento-dolor.es.\nTambien tiene derecho a presentar una reclamación ante la autoridad de control (www.aepd.es) si considera que el tratamiento no se ajusta a la normativa vigente.", 
-                        colSpan: 2, 
-                        styles: { fontSize: 7, halign: 'justify', cellPadding: 3 }
-                    }
-                ]
-            ],
+            body: tableBody,
             theme: 'grid',
             headStyles: {
                 fillColor: [255, 255, 255],
@@ -409,14 +447,15 @@ export class PdfService {
                 lineWidth: 0.1
             },
             columnStyles: {
-                0: { cellWidth: 140 },
-                1: { cellWidth: 'auto' }
+                0: { cellWidth: 145 },
+                1: { cellWidth: 35 }
             },
             styles: {
                 lineColor: [0, 0, 0],
                 lineWidth: 0.1,
                 fontSize: 10,
-                textColor: [0, 0, 0]
+                textColor: [0, 0, 0],
+                cellPadding: 3
             },
             margin: { left: margin, right: margin }
         });

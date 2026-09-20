@@ -19,6 +19,7 @@ import { Note } from "../../models/note.model";
 import { Tracing } from "../../models/tracing.model";
 import { MedicalRecordFile, PreviousRecordFile } from "../../models/file.model";
 import {
+  FormArray,
   FormBuilder,
   FormGroup,
   ValidatorFn,
@@ -194,9 +195,49 @@ export class PatientDetailComponent implements OnInit {
     return this.formBuilder.group({
       facturaNumber: ["", Validators.required],
       address: ["", Validators.required],
-      concept: ["Consulta y/o terapia médica", Validators.required],
-      totalAmount: ["", [Validators.required, Validators.min(0)]],
+      items: this.formBuilder.array([this.createInvoiceItemGroup()]),
     });
+  }
+
+  createInvoiceItemGroup(
+    concept: string = "Consulta y/o terapia médica",
+    price: number | string = ""
+  ): FormGroup {
+    return this.formBuilder.group({
+      concept: [concept, Validators.required],
+      price: [price, [Validators.required, Validators.min(0)]],
+    });
+  }
+
+  get invoiceItems(): FormArray {
+    return this.invoiceForm?.get("items") as FormArray;
+  }
+
+  get invoiceTotalAmount(): number {
+    if (!this.invoiceForm) return 0;
+    const items = this.invoiceItems?.value;
+    if (!items || !Array.isArray(items)) return 0;
+    return items.reduce((sum: number, item: any) => {
+      const val = parseFloat(item?.price);
+      return sum + (!isNaN(val) && val > 0 ? val : 0);
+    }, 0);
+  }
+
+  addInvoiceItem(
+    concept: string = "",
+    price: number | string = ""
+  ): void {
+    this.invoiceItems.push(this.createInvoiceItemGroup(concept, price));
+  }
+
+  removeInvoiceItem(index: number): void {
+    if (this.invoiceItems.length > 1) {
+      this.invoiceItems.removeAt(index);
+    }
+  }
+
+  private resetInvoiceForm(): void {
+    this.invoiceForm = this.createInvoiceForm();
   }
 
   private createNoteForm(): FormGroup {
@@ -2140,7 +2181,7 @@ export class PatientDetailComponent implements OnInit {
     this.selectedPdfFlowOption = "legacy";
     this.pdfFlowStep = "legacy";
     this.selectedTemplate = null;
-    this.invoiceForm.reset();
+    this.resetInvoiceForm();
     this.showPdfModal = true;
   }
 
@@ -2156,7 +2197,7 @@ export class PatientDetailComponent implements OnInit {
     this.selectedPdfFlowOption = "legacy";
     this.pdfFlowStep = "legacy";
     this.selectedTemplate = null;
-    this.invoiceForm.reset();
+    this.resetInvoiceForm();
   }
 
   confirmPdfGeneration(): void {
@@ -2200,7 +2241,7 @@ export class PatientDetailComponent implements OnInit {
     this.generatedPdf = null;
     this.generatedTemplatePdfBlob = null;
     this.generatedPdfFlow = null;
-    this.invoiceForm.reset();
+    this.resetInvoiceForm();
   }
 
   private selectTemplateFlow(templateId: string): void {
@@ -2359,7 +2400,23 @@ export class PatientDetailComponent implements OnInit {
 
     this.pdfLoading = true;
     try {
-      const invoiceData = this.invoiceForm.getRawValue();
+      const raw = this.invoiceForm.getRawValue();
+      const items: Array<{ concept: string; price: number }> = (
+        raw.items || []
+      ).map((item: any) => ({
+        concept: (item.concept || "").trim(),
+        price: parseFloat(item.price) || 0,
+      }));
+      const totalAmount = this.invoiceTotalAmount;
+
+      const invoiceData = {
+        facturaNumber: raw.facturaNumber,
+        address: raw.address,
+        items,
+        totalAmount,
+        concept: items.map((i) => i.concept).join(", "),
+      };
+
       const doc = this.pdfManagerService.generateInvoiceWithJsPDF(
         this.selectedPatient,
         invoiceData
